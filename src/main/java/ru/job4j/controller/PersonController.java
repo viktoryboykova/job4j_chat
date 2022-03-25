@@ -3,8 +3,10 @@ package ru.job4j.controller;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Person;
+import ru.job4j.domain.Role;
 import ru.job4j.service.ChatService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -23,10 +25,16 @@ public class PersonController {
         return chatService.findAllPersons();
     }
 
+    @GetMapping("/{id}/roles")
+    public Role getRoleOfCurrentUser(@PathVariable int id) {
+        Person currentPerson = chatService.findPersonById(id).getBody();
+        return currentPerson.getRole();
+    }
+
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody Person person) {
+    public Person signUp(@RequestBody Person person) {
         person.setPassword(encoder.encode(person.getPassword()));
         person.setRole(chatService.findRoleByName("USER"));
-        chatService.savePerson(person);
+        return chatService.savePerson(person);
     }
 }

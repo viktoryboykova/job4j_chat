@@ -38,8 +38,16 @@ public class ChatService {
         return rsl;
     }
 
-    public void savePerson(Person person) {
-        personRepository.save(person);
+    public Person savePerson(Person person) {
+        return personRepository.save(person);
+    }
+
+    public ResponseEntity<Person> findPersonById(int id) {
+        var person = this.personRepository.findById(id);
+        return new ResponseEntity<>(
+                person.orElse(new Person()),
+                person.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
+        );
     }
 
     public List<Role> findAllRoles() {
