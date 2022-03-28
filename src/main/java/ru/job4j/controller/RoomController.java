@@ -1,10 +1,10 @@
 package ru.job4j.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Room;
 import ru.job4j.service.ChatService;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -22,22 +22,26 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Room> findById(@PathVariable int id) {
+    public Room findById(@PathVariable int id) {
         return chatService.findRoomById(id);
     }
 
-    @PostMapping("/")
-    public ResponseEntity<Room> create(@RequestBody Room room) {
+    @PostMapping("/create")
+    public Room create(@RequestBody Room room) {
+        if (room.getName() == null) {
+            throw new NullPointerException("Name of room mustn't be empty");
+        }
+        room.setCreated(new Date(System.currentTimeMillis()));
         return chatService.saveRoom(room);
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Room room) {
-        return chatService.updateRoom(room);
+    public void update(@RequestBody Room room) {
+        chatService.updateRoom(room);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
-        return chatService.deleteRoom(id);
+    public void delete(@PathVariable int id) {
+        chatService.deleteRoom(id);
     }
 }

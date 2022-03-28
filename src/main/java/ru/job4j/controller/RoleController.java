@@ -1,6 +1,5 @@
 package ru.job4j.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Role;
 import ru.job4j.service.ChatService;
@@ -22,22 +21,25 @@ public class RoleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Role> findById(@PathVariable int id) {
+    public Role findById(@PathVariable int id) {
         return chatService.findRoleById(id);
     }
 
     @PostMapping("/")
-    public ResponseEntity<Role> create(@RequestBody Role role) {
+    public Role create(@RequestBody Role role) {
+        if (role.getRole() == null) {
+            throw new NullPointerException("Role mustn't be empty");
+        }
         return chatService.saveRole(role);
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Role role) {
-        return chatService.updateRole(role);
+    public void update(@RequestBody Role role) {
+        chatService.updateRole(role);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
-        return chatService.deleteRole(id);
+    public void delete(@PathVariable int id) {
+        chatService.deleteRole(id);
     }
 }

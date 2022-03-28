@@ -3,6 +3,7 @@ package ru.job4j.service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.domain.Message;
 import ru.job4j.domain.Person;
 import ru.job4j.domain.Role;
@@ -42,12 +43,15 @@ public class ChatService {
         return personRepository.save(person);
     }
 
-    public ResponseEntity<Person> findPersonById(int id) {
-        var person = this.personRepository.findById(id);
-        return new ResponseEntity<>(
-                person.orElse(new Person()),
-                person.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+    public Person findPersonById(int id) {
+        return personRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Person is not found. Please, check id."
+                ));
+    }
+
+    public Person findPersonByUsername(String username) {
+        return personRepository.findByUsername(username);
     }
 
     public List<Role> findAllRoles() {
@@ -59,31 +63,25 @@ public class ChatService {
         return roleRepository.findRoleByRole(name);
     }
 
-    public ResponseEntity<Role> findRoleById(int id) {
-        var role = this.roleRepository.findById(id);
-        return new ResponseEntity<>(
-                role.orElse(new Role()),
-                role.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+    public Role findRoleById(int id) {
+        return roleRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Role is not found. Please, check id."
+                ));
     }
 
-    public ResponseEntity<Role> saveRole(Role role) {
-        return new ResponseEntity<>(
-                this.roleRepository.save(role),
-                HttpStatus.CREATED
-        );
+    public Role saveRole(Role role) {
+        return roleRepository.save(role);
     }
 
-    public ResponseEntity<Void> updateRole(Role role) {
-        this.roleRepository.save(role);
-        return ResponseEntity.ok().build();
+    public void updateRole(Role role) {
+        roleRepository.save(role);
     }
 
-    public ResponseEntity<Void> deleteRole(int id) {
+    public void deleteRole(int id) {
         Role role = new Role();
         role.setId(id);
-        this.roleRepository.delete(role);
-        return ResponseEntity.ok().build();
+        roleRepository.delete(role);
     }
 
     public List<Message> findAllMessages() {
@@ -91,31 +89,25 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
-    public ResponseEntity<Message> findMessageById(int id) {
-        var message = this.messageRepository.findById(id);
-        return new ResponseEntity<>(
-                message.orElse(new Message()),
-                message.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+    public Message findMessageById(int id) {
+        return messageRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Message is not found. Please, check id."
+                ));
     }
 
-    public ResponseEntity<Message> saveMessage(Message message) {
-        return new ResponseEntity<>(
-                this.messageRepository.save(message),
-                HttpStatus.CREATED
-        );
+    public Message saveMessage(Message message) {
+        return messageRepository.save(message);
     }
 
-    public ResponseEntity<Void> updateMessage(Message message) {
-        this.messageRepository.save(message);
-        return ResponseEntity.ok().build();
+    public void updateMessage(Message message) {
+        messageRepository.save(message);
     }
 
-    public ResponseEntity<Void> deleteMessage(int id) {
+    public void deleteMessage(int id) {
         Message message = new Message();
         message.setId(id);
-        this.messageRepository.delete(message);
-        return ResponseEntity.ok().build();
+        messageRepository.delete(message);
     }
 
     public List<Room> findAllRooms() {
@@ -123,31 +115,25 @@ public class ChatService {
                 .collect(Collectors.toList());
     }
 
-    public ResponseEntity<Room> findRoomById(int id) {
-        var room = this.roomRepository.findById(id);
-        return new ResponseEntity<>(
-                room.orElse(new Room()),
-                room.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+    public Room findRoomById(int id) {
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Room is not found. Please, check id."
+        ));
     }
 
-    public ResponseEntity<Room> saveRoom(Room room) {
-        return new ResponseEntity<>(
-                this.roomRepository.save(room),
-                HttpStatus.CREATED
-        );
+    public Room saveRoom(Room room) {
+        return roomRepository.save(room);
     }
 
-    public ResponseEntity<Void> updateRoom(Room room) {
-        this.roomRepository.save(room);
-        return ResponseEntity.ok().build();
+    public void updateRoom(Room room) {
+        roomRepository.save(room);
     }
 
-    public ResponseEntity<Void> deleteRoom(int id) {
+    public void deleteRoom(int id) {
         Room room = new Room();
         room.setId(id);
-        this.roomRepository.delete(room);
-        return ResponseEntity.ok().build();
+        roomRepository.delete(room);
     }
 
 
