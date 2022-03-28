@@ -116,10 +116,11 @@ public class ChatService {
     }
 
     public Room findRoomById(int id) {
-        return roomRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Room is not found. Please, check id."
-        ));
+//        return roomRepository.findById(id)
+//                .orElseThrow(() -> new ResponseStatusException(
+//                HttpStatus.NOT_FOUND, "Room is not found. Please, check id."
+//        ));
+        return roomRepository.findById(id).orElse(null);
     }
 
     public Room saveRoom(Room room) {
