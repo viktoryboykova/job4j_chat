@@ -1,6 +1,10 @@
 package ru.job4j.domain;
 
+import ru.job4j.validation.Operation;
+
 import javax.persistence.*;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,12 +15,21 @@ import java.util.Objects;
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Min(value = 1, message = "Id must be more than 0", groups = {
+            Operation.OnUpdate.class, Operation.OnDelete.class
+    })
     private int id;
+
+    @NotBlank(message = "Name of room must be not empty")
     private String name;
+
     private Date created = new Date();
+
     @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;
+
+
     @OneToMany(orphanRemoval = true, mappedBy = "room")
     private List<Message> messages = new ArrayList<>();
 

@@ -5,14 +5,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Person;
 import ru.job4j.domain.PersonDTO;
 import ru.job4j.domain.Role;
 import ru.job4j.service.ChatService;
+import ru.job4j.validation.Operation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,8 +47,9 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    public Person findById(@PathVariable int id) {
-        return chatService.findPersonById(id);
+    public PersonDTO findById(@PathVariable int id) {
+        Person person = chatService.findPersonById(id);
+        return new PersonDTO(person);
     }
 
     @GetMapping("/{id}/roles")
@@ -55,7 +59,8 @@ public class PersonController {
     }
 
     @PostMapping("/sign-up")
-    public Person signUp(@RequestBody Person person) {
+    @Validated(Operation.OnCreate.class)
+    public PersonDTO signUp(@Valid @RequestBody Person person) {
         String username = person.getUsername();
         String password = person.getPassword();
         if (chatService.findPersonByUsername(username) != null) {
@@ -66,7 +71,8 @@ public class PersonController {
         }
         person.setPassword(encoder.encode(person.getPassword()));
         person.setRole(chatService.findRoleByName("USER"));
-        return chatService.save(person);
+        Person savedPerson = chatService.save(person);
+        return new PersonDTO(savedPerson);
     }
 
 

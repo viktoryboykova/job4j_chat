@@ -1,10 +1,13 @@
 package ru.job4j.controller;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Message;
 import ru.job4j.domain.MessageDTO;
 import ru.job4j.service.ChatService;
+import ru.job4j.validation.Operation;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +35,8 @@ public class MessageController {
     }
 
     @PostMapping("/")
-    public MessageDTO create(@RequestBody MessageDTO messageDTO) {
+    @Validated(Operation.OnCreate.class)
+    public MessageDTO create(@Valid @RequestBody MessageDTO messageDTO) {
         if (messageDTO.getName() == null) {
             throw new NullPointerException("Name of message mustn't be empty");
         }
@@ -48,10 +52,10 @@ public class MessageController {
     }
 
     @PutMapping("/")
-    public void update(@RequestBody Message message) {
-        Message messageFromDatabase = chatService.findMessageById(message.getId());
-        if (message.getName() != null) {
-            messageFromDatabase.setName(message.getName());
+    public void update(@Valid @RequestBody MessageDTO messageDTO) {
+        Message messageFromDatabase = chatService.findMessageById(messageDTO.getId());
+        if (messageDTO.getName() != null) {
+            messageFromDatabase.setName(messageDTO.getName());
         } else {
             throw new NullPointerException("Name of message mustn't be empty");
         }

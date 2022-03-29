@@ -1,9 +1,12 @@
 package ru.job4j.controller;
 
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Role;
 import ru.job4j.service.ChatService;
+import ru.job4j.validation.Operation;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -26,7 +29,8 @@ public class RoleController {
     }
 
     @PostMapping("/")
-    public Role create(@RequestBody Role role) {
+    @Validated(Operation.OnCreate.class)
+    public Role create(@Valid @RequestBody Role role) {
         if (role.getRole() == null) {
             throw new NullPointerException("Role mustn't be empty");
         }
@@ -34,7 +38,7 @@ public class RoleController {
     }
 
     @PutMapping("/")
-    public void update(@RequestBody Role role) {
+    public void update(@Valid @RequestBody Role role) {
         Role roleFromDatabase = chatService.findRoleById(role.getId());
         if (role.getRole() != null) {
             roleFromDatabase.setRole(role.getRole());

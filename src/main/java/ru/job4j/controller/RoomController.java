@@ -3,11 +3,14 @@ package ru.job4j.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Room;
 import ru.job4j.domain.RoomDTO;
 import ru.job4j.service.ChatService;
+import ru.job4j.validation.Operation;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +41,8 @@ public class RoomController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<RoomDTO> create(@RequestBody RoomDTO roomDTO) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<RoomDTO> create(@Valid @RequestBody RoomDTO roomDTO) {
         if (roomDTO.getName() == null) {
             throw new NullPointerException("Name of room mustn't be empty");
         }
@@ -53,12 +57,12 @@ public class RoomController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<String> update(@RequestBody Room room) {
-        Room roomFromDatabase = chatService.findRoomById(room.getId());
-        if (room.getName() == null) {
+    public ResponseEntity<String> update(@Valid @RequestBody RoomDTO roomDTO) {
+        Room roomFromDatabase = chatService.findRoomById(roomDTO.getId());
+        if (roomDTO.getName() == null) {
             throw new NullPointerException("Name of room mustn't be empty");
         } else {
-            roomFromDatabase.setName(room.getName());
+            roomFromDatabase.setName(roomDTO.getName());
         }
         chatService.update(roomFromDatabase);
         return ResponseEntity.ok("Room was updated");

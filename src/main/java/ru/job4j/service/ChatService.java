@@ -48,9 +48,7 @@ public class ChatService {
 
     public Person findPersonByUsername(String username) {
         return personRepository.findByUsername(username)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Person is not found. Please, check id."
-                ));
+                .orElse(null);
     }
 
     public List<Role> findAllRoles() {
