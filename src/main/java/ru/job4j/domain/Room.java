@@ -20,6 +20,16 @@ public class Room {
     @OneToMany(orphanRemoval = true, mappedBy = "room")
     private List<Message> messages = new ArrayList<>();
 
+    public Room(String name, Person person) {
+        this.name = name;
+        this.created = new Date(System.currentTimeMillis());
+        this.person = person;
+    }
+    public Room() {
+    }
+
+
+
     public int getId() {
         return id;
     }

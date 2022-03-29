@@ -1,13 +1,9 @@
 package ru.job4j.service;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import ru.job4j.domain.Message;
-import ru.job4j.domain.Person;
-import ru.job4j.domain.Role;
-import ru.job4j.domain.Room;
+import ru.job4j.domain.*;
 import ru.job4j.repository.MessageRepository;
 import ru.job4j.repository.PersonRepository;
 import ru.job4j.repository.RoleRepository;
@@ -39,7 +35,7 @@ public class ChatService {
         return rsl;
     }
 
-    public Person savePerson(Person person) {
+    public Person save(Person person) {
         return personRepository.save(person);
     }
 
@@ -51,7 +47,10 @@ public class ChatService {
     }
 
     public Person findPersonByUsername(String username) {
-        return personRepository.findByUsername(username);
+        return personRepository.findByUsername(username)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Person is not found. Please, check id."
+                ));
     }
 
     public List<Role> findAllRoles() {
@@ -60,7 +59,10 @@ public class ChatService {
     }
 
     public Role findRoleByName(String name) {
-        return roleRepository.findRoleByRole(name);
+        return roleRepository.findRoleByRole(name)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Role is not found. Please, check id."
+                ));
     }
 
     public Role findRoleById(int id) {
@@ -70,11 +72,11 @@ public class ChatService {
                 ));
     }
 
-    public Role saveRole(Role role) {
+    public Role save(Role role) {
         return roleRepository.save(role);
     }
 
-    public void updateRole(Role role) {
+    public void update(Role role) {
         roleRepository.save(role);
     }
 
@@ -96,11 +98,11 @@ public class ChatService {
                 ));
     }
 
-    public Message saveMessage(Message message) {
+    public Message save(Message message) {
         return messageRepository.save(message);
     }
 
-    public void updateMessage(Message message) {
+    public void update(Message message) {
         messageRepository.save(message);
     }
 
@@ -116,18 +118,24 @@ public class ChatService {
     }
 
     public Room findRoomById(int id) {
-//        return roomRepository.findById(id)
-//                .orElseThrow(() -> new ResponseStatusException(
-//                HttpStatus.NOT_FOUND, "Room is not found. Please, check id."
-//        ));
-        return roomRepository.findById(id).orElse(null);
+        return roomRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Room is not found. Please, check id."
+                ));
     }
 
-    public Room saveRoom(Room room) {
+    public Room findRoomByName(String name) {
+        return roomRepository.findRoomByName(name)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Room is not found. Please, check id."
+                ));
+    }
+
+    public Room save(Room room) {
         return roomRepository.save(room);
     }
 
-    public void updateRoom(Room room) {
+    public void update(Room room) {
         roomRepository.save(room);
     }
 

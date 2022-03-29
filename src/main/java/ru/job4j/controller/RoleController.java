@@ -30,12 +30,16 @@ public class RoleController {
         if (role.getRole() == null) {
             throw new NullPointerException("Role mustn't be empty");
         }
-        return chatService.saveRole(role);
+        return chatService.save(role);
     }
 
     @PutMapping("/")
     public void update(@RequestBody Role role) {
-        chatService.updateRole(role);
+        Role roleFromDatabase = chatService.findRoleById(role.getId());
+        if (role.getRole() != null) {
+            roleFromDatabase.setRole(role.getRole());
+        }
+        chatService.update(roleFromDatabase);
     }
 
     @DeleteMapping("/{id}")

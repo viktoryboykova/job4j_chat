@@ -7,12 +7,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Person;
+import ru.job4j.domain.PersonDTO;
 import ru.job4j.domain.Role;
 import ru.job4j.service.ChatService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,8 +36,11 @@ public class PersonController {
     }
 
     @GetMapping("/all")
-    public List<Person> findAll() {
-        return chatService.findAllPersons();
+    public List<PersonDTO> findAll() {
+        List<Person> persons = chatService.findAllPersons();
+        List<PersonDTO> personsDTO = new ArrayList<>();
+        persons.forEach(p -> personsDTO.add(new PersonDTO(p)));
+        return personsDTO;
     }
 
     @GetMapping("/{id}")
@@ -61,8 +66,10 @@ public class PersonController {
         }
         person.setPassword(encoder.encode(person.getPassword()));
         person.setRole(chatService.findRoleByName("USER"));
-        return chatService.savePerson(person);
+        return chatService.save(person);
     }
+
+
 
     @ExceptionHandler(value = { IllegalArgumentException.class })
     public void exceptionHandler(Exception e, HttpServletRequest request, HttpServletResponse response) throws IOException {

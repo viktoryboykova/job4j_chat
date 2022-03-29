@@ -19,6 +19,16 @@ public class Message {
     @JoinColumn(name = "person_id")
     private Person person;
 
+    public Message(String name, Room room, Person person) {
+        this.name = name;
+        this.created = new Date(System.currentTimeMillis());
+        this.room = room;
+        this.person = person;
+    }
+
+    public Message() {
+    }
+
     public int getId() {
         return id;
     }

@@ -5,9 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.domain.Room;
+import ru.job4j.domain.RoomDTO;
 import ru.job4j.service.ChatService;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -20,36 +21,47 @@ public class RoomController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<List<Room>> findAll() {
+    public ResponseEntity<List<RoomDTO>> findAll() {
         List<Room> rooms = chatService.findAllRooms();
-        return new ResponseEntity<>(rooms,
-        rooms.size() != 0? HttpStatus.OK : HttpStatus.NOT_FOUND
+        List<RoomDTO> roomsDTO = new ArrayList<>();
+        rooms.forEach(r -> roomsDTO.add(new RoomDTO(r)));
+        return new ResponseEntity<>(roomsDTO,
+        roomsDTO.size() != 0? HttpStatus.OK : HttpStatus.NOT_FOUND
         );
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Room> findById(@PathVariable int id) {
+    public ResponseEntity<RoomDTO> findById(@PathVariable int id) {
         Room room = chatService.findRoomById(id);
-        return new ResponseEntity<>(room,
-                room != null? HttpStatus.OK : HttpStatus.NOT_FOUND
-        );
+        RoomDTO roomDTO = new RoomDTO(room);
+        return new ResponseEntity<>(roomDTO, HttpStatus.OK);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Room> create(@RequestBody Room room) {
-        if (room.getName() == null) {
+    public ResponseEntity<RoomDTO> create(@RequestBody RoomDTO roomDTO) {
+        if (roomDTO.getName() == null) {
             throw new NullPointerException("Name of room mustn't be empty");
         }
-        room.setCreated(new Date(System.currentTimeMillis()));
-        return new ResponseEntity<>(chatService.saveRoom(room),
+        if (roomDTO.getOwner() == null) {
+            throw new NullPointerException("Owner of room mustn't be empty");
+        }
+        Room room = new Room(roomDTO.getName(), chatService.findPersonByUsername(roomDTO.getOwner()));
+        Room savedRoom = chatService.save(room);
+        return new ResponseEntity<>(new RoomDTO(savedRoom),
                 HttpStatus.CREATED
         );
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Room room) {
-        chatService.updateRoom(room);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<String> update(@RequestBody Room room) {
+        Room roomFromDatabase = chatService.findRoomById(room.getId());
+        if (room.getName() == null) {
+            throw new NullPointerException("Name of room mustn't be empty");
+        } else {
+            roomFromDatabase.setName(room.getName());
+        }
+        chatService.update(roomFromDatabase);
+        return ResponseEntity.ok("Room was updated");
     }
 
     @DeleteMapping("/{id}")
